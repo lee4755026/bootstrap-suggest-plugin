@@ -486,9 +486,9 @@
             (inEffectiveFields(key, options) || inSearchFields(key, options)) && // 必须在有效的搜索字段中
             (
                 // ~value.indexOf(keyword) || // 匹配值包含关键字
-                options.matchMode==='all' && ~value.indexOf(keyword)||
+                options.matchMode==='all' && ~value.indexOf(keyword)   ||
                 options.matchMode==='left' && value.startsWith(keyword)||
-                options.matchMode==='right' && value.endsWith(keyword)||
+                options.matchMode==='right' && value.endsWith(keyword) ||
                 options.twoWayMatch && ~keyword.indexOf(value) // 关键字包含匹配值
             );
     }
