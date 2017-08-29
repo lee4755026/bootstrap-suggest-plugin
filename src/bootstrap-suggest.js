@@ -482,11 +482,13 @@
             keyword = keyword.toLocaleLowerCase();
             value = value.toLocaleLowerCase();
         }
-
         return value &&
             (inEffectiveFields(key, options) || inSearchFields(key, options)) && // 必须在有效的搜索字段中
             (
-                ~value.indexOf(keyword) || // 匹配值包含关键字
+                // ~value.indexOf(keyword) || // 匹配值包含关键字
+                options.matchMode==='all' && ~value.indexOf(keyword)||
+                options.matchMode==='left' && value.startsWith(keyword)||
+                options.matchMode==='right' && value.endsWith(keyword)||
                 options.twoWayMatch && ~keyword.indexOf(value) // 关键字包含匹配值
             );
     }
@@ -612,6 +614,7 @@
         delay: 300,                     // 搜索触发的延时时间间隔，单位毫秒
         emptyTip: '',                   // 查询为空时显示的内容，可为 html
         searchingTip: '搜索中...',      // ajax 搜索时显示的提示内容，当搜索时间较长时给出正在搜索的提示
+        matchMode: 'all',      // 关键字匹配模式，all,left,right
 
         /* UI */
         autoDropup: FALSE,              // 选择菜单是否自动判断向上展开。设为 true，则当下拉菜单高度超过窗体，且向上方向不会被窗体覆盖，则选择菜单向上弹出

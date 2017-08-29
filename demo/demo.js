@@ -11,7 +11,8 @@
             clearable: true,
             url: "data.json",
             idField: "userId",
-            keyField: "userName"
+            keyField: "userName",
+            matchMode:"left"
         }).on('onDataRequestSuccess', function (e, result) {
             console.log('onDataRequestSuccess: ', result);
         }).on('onSetSelectValue', function (e, keyword, data) {
