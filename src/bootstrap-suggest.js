@@ -99,7 +99,8 @@
             setOrGetDataId($input, keywords.id || '').val(keywords.key).focus();
         }
 
-        $input.trigger('onSetSelectValue', [keywords, (options.data.value || options._lastData.value)[keywords.index]]);
+        $input.data('pre-val', $input.val())
+            .trigger('onSetSelectValue', [keywords, (options.data.value || options._lastData.value)[keywords.index]]);
     }
     /**
      * 调整选择菜单位置
@@ -176,21 +177,31 @@
      */
     function setBackground($input, options) {
         var inputbg, bg, warnbg;
-
         if ((options.indexId === -1 && !options.idField) || options.multiWord) {
             return $input;
         }
 
         bg = options.inputBgColor;
         warnbg = options.inputWarnColor;
-        if (setOrGetDataId($input) || !$input.val()) {
-            return $input.css('background', bg || '');
+
+        var curVal = $input.val();
+        var preVal = $input.data('pre-val');
+
+        if (setOrGetDataId($input) || !curVal) {
+            $input.css('background', bg || '');
+
+            if (!curVal && preVal) {
+                $input.trigger('onUnsetSelectValue').data('pre-val', '');
+            }
+
+            return $input;
         }
 
         inputbg = $input.css('backgroundColor').replace(/ /g, '').split(',', 3).join(',');
         // 自由输入的内容，设置背景色
         if (!~warnbg.indexOf(inputbg)) {
             $input.trigger('onUnsetSelectValue') // 触发取消data-id事件
+                .data('pre-val', '')
                 .css('background', warnbg);
         }
 
@@ -582,7 +593,7 @@
         return $iClear.css({
             position: 'absolute',
             top: 12,
-            right: options.showBtn ? ($input.next('.input-group-btn').width() || 33) + 2 : 12,
+            // right: options.showBtn ? Math.max($input.next('.input-group-btn').width(), 33) + 2 : 12,
             zIndex: 4,
             cursor: 'pointer',
             fontSize: 12
@@ -726,7 +737,6 @@
                 // 开始事件处理
                 $input.on('keydown', function(event) {
                     var currentList, tipsKeyword; // 提示列表上被选中的关键字
-
 
                     // 当提示层显示时才对键盘事件处理
                     if (!$dropdownMenu.is(':visible')) {
@@ -929,7 +939,8 @@
 
                     $parent.mouseenter(function() {
                         if (!$input.prop(DISABLED)) {
-                            $iClear.show();
+                            $iClear.css('right', options.showBtn ? Math.max($input.next('.input-group-btn').width(), 33) + 2 : 12)
+                                .show();
                         }
                     }).mouseleave(function() {
                         $iClear.hide();
